@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Resume Builder</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background: #f4f4f9;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h1, h2, h3 {
+      color: #444;
+    }
+
+    .builder {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .form-section, .preview-section {
+      flex: 1;
+      min-width: 300px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    form input, form textarea, form select, button {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    button {
+      background: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #45a049;
+    }
+
+    #resumePreview {
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .template-modern {
+      font-family: 'Helvetica Neue', sans-serif;
+      color: #2c3e50;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Interactive Resume Builder</h1>
+    <div class="builder">
+      <div class="form-section">
+        <h2>Enter Your Details</h2>
+        <form id="resumeForm">
+          <input type="text" id="name" placeholder="Full Name" required />
+          <input type="text" id="title" placeholder="Professional Title" />
+          <textarea id="summary" placeholder="Professional Summary"></textarea>
+
+          <h3>Skills</h3>
+          <input type="text" id="skills" placeholder="Comma-separated skills" />
+
+          <h3>Experience</h3>
+          <textarea id="experience" placeholder="Describe your work experience"></textarea>
+
+          <h3>Education</h3>
+          <textarea id="education" placeholder="Describe your education"></textarea>
+
+          <button type="submit">Generate Resume</button>
+        </form>
+      </div>
+
+      <div class="preview-section">
+        <h2>Resume Preview</h2>
+        <div id="resumePreview" class="template-default">
+          <h1 id="previewName"></h1>
+          <h2 id="previewTitle"></h2>
+          <p id="previewSummary"></p>
+          <div>
+            <h3>Skills</h3>
+            <ul id="previewSkills"></ul>
+          </div>
+          <div>
+            <h3>Experience</h3>
+            <p id="previewExperience"></p>
+          </div>
+          <div>
+            <h3>Education</h3>
+            <p id="previewEducation"></p>
+          </div>
+        </div>
+        <button onclick="exportPDF()">Export to PDF</button>
+        <select id="templateSelector" onchange="changeTemplate()">
+          <option value="default">Default</option>
+          <option value="modern">Modern</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('resumeForm');
+    const preview = {
+      name: document.getElementById('previewName'),
+      title: document.getElementById('previewTitle'),
+      summary: document.getElementById('previewSummary'),
+      skills: document.getElementById('previewSkills'),
+      experience: document.getElementById('previewExperience'),
+      education: document.getElementById('previewEducation')
+    };
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      preview.name.textContent = document.getElementById('name').value;
+      preview.title.textContent = document.getElementById('title').value;
+      preview.summary.textContent = document.getElementById('summary').value;
+
+      const skillsList = document.getElementById('skills').value.split(',').map(skill => skill.trim());
+      preview.skills.innerHTML = '';
+      skillsList.forEach(skill => {
+        const li = document.createElement('li');
+        li.textContent = skill;
+        preview.skills.appendChild(li);
+      });
+
+      preview.experience.textContent = document.getElementById('experience').value;
+      preview.education.textContent = document.getElementById('education').value;
+    });
+
+    function exportPDF() {
+      const element = document.getElementById('resumePreview');
+      html2pdf().from(element).save('resume.pdf');
+    }
+
+    function changeTemplate() {
+      const template = document.getElementById('templateSelector').value;
+      const previewDiv = document.getElementById('resumePreview');
+      previewDiv.className = template === 'modern' ? 'template-modern' : 'template-default';
+    }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</body>
+
+</html>
